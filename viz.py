@@ -36,7 +36,7 @@ def app(title=None):
         analysis.show_html(filepath=full_path, open_browser=False, layout='vertical', scale=1.0)
         HtmlFile = open("output.html", 'r', encoding='utf-8')
         source_code = HtmlFile.read() 
-        components.html(source_code, height=1200, width=1500, scrolling=True)
+        components.html(source_code, height=1200, width=1600, scrolling=True)
 
 app(title='Sweet Visualization')
 
