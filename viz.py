@@ -38,6 +38,6 @@ def app(title=None):
         source_code = HtmlFile.read() 
         components.html(source_code, height=1200, width=1750, scrolling=True)
 
-app(title='Sweet Visualization')
+app(title='SweetViz Visualization App')
 
 
