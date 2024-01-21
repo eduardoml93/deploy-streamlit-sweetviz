@@ -6,6 +6,7 @@ import sweetviz as sv
 from io import StringIO
 
 def app(title=None):
+    st.set_page_config(layout="wide")
     st.title(title)
 
     # Add a file uploader for CSV files
