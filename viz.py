@@ -18,7 +18,7 @@ def app(title=None):
     if uploaded_file is not None:
         # Read the CSV data from the uploaded file
         df = pd.read_csv(StringIO(uploaded_file.getvalue().decode('utf-8')), sep=sep)
-        st.write(df.head())
+        st.write(df)
 
         # Use the analysis function from sweetviz module to create a 'DataframeReport' object.
         analysis = sv.analyze(df)
