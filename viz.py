@@ -4,40 +4,49 @@ import streamlit.components.v1 as components
 import pandas as pd
 import sweetviz as sv
 from io import StringIO
+import requests
 
 def app(title=None):
     st.set_page_config(layout="wide")
     st.title(title)
 
-    # Add a file uploader for CSV files
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+    # Escolha da fonte de dados
+    option = st.radio("Selecione a fonte do CSV:", ("Upload de Arquivo", "Link da Web"))
 
-    # Add a select box for choosing the separator
-    sep = st.selectbox("Select the separator", ("Comma", "Tab", ";", ":"))
+    df = None
+    sep = st.selectbox("Selecione o separador", ("Comma", "Tab", ";", ":"))
     sep = "," if sep == "Comma" else "\t" if sep == "Tab" else ";" if sep == ";" else ":"
 
-    if uploaded_file is not None:
-        # Read the CSV data from the uploaded file
-        df = pd.read_csv(StringIO(uploaded_file.getvalue().decode('utf-8')), sep=sep)
-        st.write(df)
+    if option == "Upload de Arquivo":
+        uploaded_file = st.file_uploader("Escolha um arquivo CSV", type="csv")
+        if uploaded_file is not None:
+            df = pd.read_csv(StringIO(uploaded_file.getvalue().decode('utf-8')), sep=sep)
 
-        # Use the analysis function from sweetviz module to create a 'DataframeReport' object.
+    elif option == "Link da Web":
+        url = st.text_input("Cole aqui o link do CSV (ex: https://.../arquivo.csv)")
+        if url:
+            try:
+                response = requests.get(url)
+                response.raise_for_status()  # Verifica se houve erro
+                df = pd.read_csv(StringIO(response.text), sep=sep)
+            except Exception as e:
+                st.error(f"Erro ao carregar o CSV da URL: {e}")
+
+    # Se o DataFrame foi carregado, mostra os dados e gera relatório
+    if df is not None:
+        st.write("### Visualização inicial do CSV")
+        st.write(df.head())
+
+        # Gera análise com Sweetviz
         analysis = sv.analyze(df)
 
-        # Save the analysis as an HTML file.
+        # Salva o relatório em HTML
         html_file = "output.html"
-        # analysis.show_html(html_file)
-        # Get the current directory
-        current_dir = os.getcwd()
-        # Create the full path to the HTML file
-        full_path = os.path.join(current_dir, html_file)
+        analysis.show_html(filepath=html_file, open_browser=False, layout='vertical', scale=1.0)
 
-        # Render the output on a web page.
-        analysis.show_html(filepath=full_path, open_browser=False, layout='vertical', scale=1.0)
-        HtmlFile = open("output.html", 'r', encoding='utf-8')
-        source_code = HtmlFile.read() 
-        components.html(source_code, height=1200, width=1750, scrolling=True)
+        # Mostra dentro do Streamlit
+        with open(html_file, 'r', encoding='utf-8') as HtmlFile:
+            source_code = HtmlFile.read()
+            components.html(source_code, height=1200, width=1750, scrolling=True)
 
 app(title='SweetViz Visualization App')
-
-
