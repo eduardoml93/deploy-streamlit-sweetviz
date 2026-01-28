@@ -7,7 +7,7 @@ from io import StringIO
 import requests
 
 def app(title=None):
-    st.set_page_config(layout="wide")
+    st.set_page_config(page_title="EDA com SweetViz", page_icon="🎲", layout="wide")
     st.title(title)
 
     # Escolha da fonte de dados
@@ -49,4 +49,5 @@ def app(title=None):
             source_code = HtmlFile.read()
             components.html(source_code, height=1200, width=1750, scrolling=True)
 
-app(title='SweetViz Visualization App')
+app(title='🎲 EDA com SweetViz')
+
